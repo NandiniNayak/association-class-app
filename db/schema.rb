@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_04_223808) do
+ActiveRecord::Schema.define(version: 2021_02_05_013413) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,11 +25,41 @@ ActiveRecord::Schema.define(version: 2021_02_04_223808) do
     t.index ["author_id"], name: "index_addresses_on_author_id"
   end
 
+  create_table "appointments", force: :cascade do |t|
+    t.date "date"
+    t.bigint "patient_id", null: false
+    t.bigint "physician_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["patient_id"], name: "index_appointments_on_patient_id"
+    t.index ["physician_id"], name: "index_appointments_on_physician_id"
+  end
+
   create_table "authors", force: :cascade do |t|
     t.string "name"
     t.date "dob"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.string "commentable_type", null: false
+    t.bigint "commentable_id", null: false
+    t.string "description"
+    t.date "date"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id"
+  end
+
+  create_table "images", force: :cascade do |t|
+    t.string "imageable_type", null: false
+    t.bigint "imageable_id", null: false
+    t.string "url"
+    t.date "date"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["imageable_type", "imageable_id"], name: "index_images_on_imageable_type_and_imageable_id"
   end
 
   create_table "patients", force: :cascade do |t|
@@ -51,6 +81,16 @@ ActiveRecord::Schema.define(version: 2021_02_04_223808) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "name"
+  end
+
+  create_table "products", force: :cascade do |t|
+    t.bigint "user_id"
+    t.integer "buyer_id"
+    t.integer "seller_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "name"
+    t.index ["user_id"], name: "index_products_on_user_id"
   end
 
   create_table "students", force: :cascade do |t|
@@ -99,8 +139,11 @@ ActiveRecord::Schema.define(version: 2021_02_04_223808) do
   end
 
   add_foreign_key "addresses", "authors"
+  add_foreign_key "appointments", "patients"
+  add_foreign_key "appointments", "physicians"
   add_foreign_key "patients_physicians", "patients"
   add_foreign_key "patients_physicians", "physicians"
+  add_foreign_key "products", "users"
   add_foreign_key "students_teachers", "students"
   add_foreign_key "students_teachers", "teachers"
   add_foreign_key "subjects", "students"
